@@ -18,6 +18,9 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
     {     SEMICOLON,         "semicolon" },
     {         SLASH,             "slash" },
     {          STAR,              "star" },
+    {       PERCENT,           "percent" },
+    {         CARET,               "xor" },
+    {         TILDE,               "not" },
 
     // One or two character tokens
     {        EXCLAM,       "exclamation" },
@@ -32,8 +35,6 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
     {       AMP_AMP,       "logical and" },
     {          PIPE,        "bitwise or" },
     {     PIPE_PIPE,        "logical or" },
-    {         CARET,               "xor" },
-    {         TILDE,               "not" },
 
     // Literals
     {    IDENTIFIER,        "identifier" },
@@ -58,7 +59,7 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
 
 } // namespace
 
-Token::Token(TokenType type, std::string_view lexeme, const Literal& literal, int line)
+Token::Token(TokenType type, std::string_view lexeme, const Value& literal, int line)
     : m_type(type), m_lexeme(lexeme), m_literal(literal), m_line(line) {}
 
 std::string Token::ToString() const {

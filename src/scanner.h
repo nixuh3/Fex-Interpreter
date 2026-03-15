@@ -19,7 +19,7 @@ class Scanner {
     void ScanIdentifier();
 
     void AddToken(TokenType type);
-    void AddToken(TokenType type, Literal literal);
+    void AddToken(TokenType type, Value literal);
 
     bool IsAtEnd(int offset = 0) const;
     char Peek(int offset = 0) const;

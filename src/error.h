@@ -6,7 +6,7 @@ namespace fex {
 
 class Token;
 
-void Error(int line, std::string_view message);
-void Error(const Token& token, std::string_view message);
+void FexError(int line, std::string_view message);
+void FexError(const Token& token, std::string_view message);
 
 } // namespace fex

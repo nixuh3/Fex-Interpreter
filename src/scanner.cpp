@@ -57,6 +57,7 @@ void Scanner::ScanToken() {
                 AddToken(SLASH);
             }
             break;
+        case '%': AddToken(PERCENT); break;
         case '^': AddToken(CARET); break;
         case '~': AddToken(TILDE); break;
         case '!': AddToken(Match('=') ? EXCLAM_EQUAL : EXCLAM); break;
@@ -81,7 +82,7 @@ void Scanner::ScanToken() {
             } else if (IsAlpha(c)) {
                 ScanIdentifier();
             } else {
-                Error(m_line, "Unexpected character.");
+                FexError(m_line, "Unexpected character.");
             }
             break;
     }
@@ -96,7 +97,7 @@ void Scanner::ScanString() {
     }
 
     if (IsAtEnd()) {
-        Error(m_line, "Unterminated string.");
+        FexError(m_line, "Unterminated string.");
         return;
     }
 
@@ -146,7 +147,7 @@ void Scanner::AddToken(TokenType type) {
     AddToken(type, {});
 }
 
-void Scanner::AddToken(TokenType type, Literal literal) {
+void Scanner::AddToken(TokenType type, Value literal) {
     std::string_view text(&m_source[m_start], m_current - m_start);
     m_tokens.emplace_back(type, text, literal, m_line);
 }

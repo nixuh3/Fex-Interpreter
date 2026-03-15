@@ -1,4 +1,5 @@
 #include "fex.h"
+#include "parser.h"
 #include "scanner.h"
 #include <fstream>
 #include <iostream>
@@ -23,7 +24,7 @@ void FexInterpreter::RunFile(const std::string& path) {
 
     Run(buffer);
 
-    if (m_hadError) {
+    if (s_hadError) {
         std::exit(1);
     }
 }
@@ -38,20 +39,29 @@ void FexInterpreter::RunREPL() {
         }
 
         Run(line);
-        m_hadError = false;
+        s_hadError = false;
     }
 }
 
 void FexInterpreter::Run(std::string_view source) {
     Scanner scanner(source);
     const auto& tokens = scanner.ScanTokens();
+
     for (const auto& token : tokens) {
         std::cout << token.ToString() << "\n";
+    }
+
+    Parser parser(tokens, s_arena);
+    auto expr = parser.Parse();
+
+    if (s_hadError) {
+        return;
     }
 }
 
 void FexInterpreter::Report(int line, std::string_view where, std::string_view msg) {
     std::cout << "[line " << line << "] Error" << where << ": " << msg << "\n";
+    s_hadError = true;
 }
 
 } // namespace fex

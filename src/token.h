@@ -18,6 +18,7 @@ enum TokenType {
     SEMICOLON,
     SLASH,
     STAR,
+    PERCENT,
     CARET,
     TILDE,
 
@@ -56,21 +57,22 @@ enum TokenType {
     END
 };
 
-using Literal = std::variant<std::monostate, double, std::string>;
+using Value = std::variant<std::monostate, double, std::string>;
 
 class Token {
   public:
-    Token(TokenType type, std::string_view lexeme, const Literal& literal, int line);
+    Token(TokenType type, std::string_view lexeme, const Value& literal, int line);
     std::string ToString() const;
 
     TokenType GetType() const { return m_type; }
-    int GetLine() const { return m_line; }
     const std::string& GetLexeme() const { return m_lexeme; }
+    const Value& GetLiteral() const { return m_literal; }
+    int GetLine() const { return m_line; }
 
   private:
     const TokenType m_type;
     const std::string m_lexeme;
-    const Literal m_literal;
+    const Value m_literal;
     const int m_line;
 };
 
