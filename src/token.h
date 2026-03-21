@@ -59,21 +59,17 @@ enum TokenType {
 
 using Value = std::variant<std::monostate, double, std::string>;
 
+std::string ValToStr(const Value& value);
+
 class Token {
   public:
     Token(TokenType type, std::string_view lexeme, const Value& literal, int line);
-    std::string ToString() const;
+    std::string ToStr() const;
 
-    TokenType GetType() const { return m_type; }
-    const std::string& GetLexeme() const { return m_lexeme; }
-    const Value& GetLiteral() const { return m_literal; }
-    int GetLine() const { return m_line; }
-
-  private:
-    const TokenType m_type;
-    const std::string m_lexeme;
-    const Value m_literal;
-    const int m_line;
+    const TokenType type;
+    const std::string lexeme;
+    const Value literal;
+    const int line;
 };
 
 } // namespace fex

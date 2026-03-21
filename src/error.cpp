@@ -9,10 +9,10 @@ void FexError(int line, std::string_view message) {
 }
 
 void FexError(const Token& token, std::string_view message) {
-    if (token.GetType() == END) {
-        FexInterpreter::Report(token.GetLine(), " at end", message);
+    if (token.type == END) {
+        FexInterpreter::Report(token.line, " at end", message);
     } else {
-        FexInterpreter::Report(token.GetLine(), " at '" + token.GetLexeme() + "'", message);
+        FexInterpreter::Report(token.line, " at '" + token.lexeme + "'", message);
     }
 }
 

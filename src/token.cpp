@@ -59,23 +59,26 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
 
 } // namespace
 
-Token::Token(TokenType type, std::string_view lexeme, const Value& literal, int line)
-    : m_type(type), m_lexeme(lexeme), m_literal(literal), m_line(line) {}
+std::string ValToStr(const Value& value) {
+    return std::visit(
+        [](auto&& val) -> std::string {
+            using T = std::decay_t<decltype(val)>;
+            if constexpr (std::is_same_v<T, std::string>) {
+                return val;
+            } else if constexpr (std::is_same_v<T, double>) {
+                return std::to_string(val);
+            } else {
+                return "";
+            }
+        },
+        value);
+}
 
-std::string Token::ToString() const {
-    return std::string(TypeToStr.at(m_type)) + " " + m_lexeme + " " +
-        std::visit(
-               [](auto&& val) -> std::string {
-                   using T = std::decay_t<decltype(val)>;
-                   if constexpr (std::is_same_v<T, std::string>) {
-                       return val;
-                   } else if constexpr (std::is_same_v<T, double>) {
-                       return std::to_string(val);
-                   } else {
-                       return "";
-                   }
-               },
-               m_literal);
+Token::Token(TokenType type, std::string_view lexeme, const Value& literal, int line)
+    : type(type), lexeme(lexeme), literal(literal), line(line) {}
+
+std::string Token::ToStr() const {
+    return std::string(TypeToStr.at(type)) + " " + lexeme + " " + ValToStr(literal);
 }
 
 } // namespace fex

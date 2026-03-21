@@ -1,4 +1,5 @@
 #include "fex.h"
+#include "ast_printer.h"
 #include "parser.h"
 #include "scanner.h"
 #include <fstream>
@@ -47,9 +48,9 @@ void FexInterpreter::Run(std::string_view source) {
     Scanner scanner(source);
     const auto& tokens = scanner.ScanTokens();
 
-    for (const auto& token : tokens) {
-        std::cout << token.ToString() << "\n";
-    }
+    // for (const auto& token : tokens) {
+    //     std::cout << token.ToStr() << "\n";
+    // }
 
     Parser parser(tokens, s_arena);
     auto expr = parser.Parse();
@@ -57,6 +58,9 @@ void FexInterpreter::Run(std::string_view source) {
     if (s_hadError) {
         return;
     }
+
+    AstPrinter printer;
+    std::cout << printer.Print(expr) << "\n";
 }
 
 void FexInterpreter::Report(int line, std::string_view where, std::string_view msg) {

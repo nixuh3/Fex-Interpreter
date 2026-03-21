@@ -25,7 +25,7 @@ const Expr* Parser::LogicalOr() {
     while (Match(PIPE_PIPE)) {
         Token op = Previous();
         const Expr* right = LogicalAnd();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -37,7 +37,7 @@ const Expr* Parser::LogicalAnd() {
     while (Match(AMP_AMP)) {
         Token op = Previous();
         const Expr* right = InclusiveOr();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -49,7 +49,7 @@ const Expr* Parser::InclusiveOr() {
     while (Match(PIPE)) {
         Token op = Previous();
         const Expr* right = ExclusiveOr();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -61,7 +61,7 @@ const Expr* Parser::ExclusiveOr() {
     while (Match(CARET)) {
         Token op = Previous();
         const Expr* right = BitwiseAnd();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -73,7 +73,7 @@ const Expr* Parser::BitwiseAnd() {
     while (Match(AMP)) {
         Token op = Previous();
         const Expr* right = Equality();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -85,7 +85,7 @@ const Expr* Parser::Equality() {
     while (Match(EXCLAM_EQUAL, EQUAL_EQUAL)) {
         Token op = Previous();
         const Expr* right = Relational();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -97,7 +97,7 @@ const Expr* Parser::Relational() {
     while (Match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
         Token op = Previous();
         const Expr* right = Term();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -109,7 +109,7 @@ const Expr* Parser::Term() {
     while (Match(MINUS, PLUS)) {
         Token op = Previous();
         const Expr* right = Factor();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -121,7 +121,7 @@ const Expr* Parser::Factor() {
     while (Match(STAR, SLASH, PERCENT)) {
         Token op = Previous();
         const Expr* right = Unary_();
-        expr = m_arena.Alloc<Binary>(expr, op, right);
+        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
     }
 
     return expr;
@@ -131,7 +131,7 @@ const Expr* Parser::Unary_() {
     if (Match(EXCLAM, PLUS, MINUS, TILDE)) {
         Token op = Previous();
         const Expr* right = Unary_();
-        return m_arena.Alloc<Unary>(op, right);
+        return m_arena.Alloc<Expr>(Unary{ op, right });
     }
 
     return Primary_();
@@ -139,23 +139,23 @@ const Expr* Parser::Unary_() {
 
 const Expr* Parser::Primary_() {
     if (Match(FALSE)) {
-        return m_arena.Alloc<Literal>(0.0);
+        return m_arena.Alloc<Expr>(Literal{ 0.0 });
     }
     if (Match(TRUE)) {
-        return m_arena.Alloc<Literal>(1.0);
+        return m_arena.Alloc<Expr>(Literal{ 1.0 });
     }
     if (Match(NUL)) {
-        return m_arena.Alloc<Literal>(std::monostate{});
+        return m_arena.Alloc<Expr>(Literal{ std::monostate{} });
     }
 
     if (Match(NUMBER, STRING)) {
-        return m_arena.Alloc<Literal>(Previous().GetLiteral());
+        return m_arena.Alloc<Expr>(Literal{ Previous().literal });
     }
 
     if (Match(LEFT_PAREN)) {
         const Expr* expr = Expression();
         Consume(RIGHT_PAREN, "Expect ')' after expression.");
-        return m_arena.Alloc<Grouping>(expr);
+        return m_arena.Alloc<Expr>(Grouping{ expr });
     }
 
     throw Error(Peek(), "Expect expression.");
@@ -173,7 +173,7 @@ bool Parser::Check(TokenType type) {
     if (IsAtEnd()) {
         return false;
     }
-    return Peek().GetType() == type;
+    return Peek().type == type;
 }
 
 Token Parser::Advance() {
@@ -184,7 +184,7 @@ Token Parser::Advance() {
 }
 
 bool Parser::IsAtEnd() {
-    return Peek().GetType() == END;
+    return Peek().type == END;
 }
 
 Token Parser::Peek() {
