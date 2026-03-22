@@ -1,4 +1,7 @@
 #include "token.h"
+#include <cmath>
+#include <iomanip>
+#include <sstream>
 #include <unordered_map>
 
 namespace fex {
@@ -19,8 +22,6 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
     {         SLASH,             "slash" },
     {          STAR,              "star" },
     {       PERCENT,           "percent" },
-    {         CARET,               "xor" },
-    {         TILDE,               "not" },
 
     // One or two character tokens
     {        EXCLAM,       "exclamation" },
@@ -31,9 +32,7 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
     { GREATER_EQUAL,     "greater equal" },
     {          LESS,              "less" },
     {    LESS_EQUAL,        "less equal" },
-    {           AMP,       "bitwise and" },
     {       AMP_AMP,       "logical and" },
-    {          PIPE,        "bitwise or" },
     {     PIPE_PIPE,        "logical or" },
 
     // Literals
@@ -57,6 +56,30 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
     {           END,               "EOF" }
 };
 
+std::string FormatDouble(double x, int precision = 6) {
+    if (std::isnan(x)) {
+        return "nan";
+    } else if (std::isinf(x)) {
+        return x > 0 ? "inf" : "-inf";
+    }
+
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(precision) << x;
+
+    std::string s = oss.str();
+
+    auto pos = s.find_last_not_of('0');
+    if (pos != std::string::npos) {
+        s.erase(pos + 1);
+    }
+
+    if (!s.empty() && s.back() == '.') {
+        s.pop_back();
+    }
+
+    return s;
+}
+
 } // namespace
 
 std::string ValToStr(const Value& value) {
@@ -66,7 +89,7 @@ std::string ValToStr(const Value& value) {
             if constexpr (std::is_same_v<T, std::string>) {
                 return val;
             } else if constexpr (std::is_same_v<T, double>) {
-                return std::to_string(val);
+                return FormatDouble(val);
             } else {
                 return "";
             }

@@ -19,9 +19,6 @@ class Parser {
     const Expr* Expression();
     const Expr* LogicalOr();
     const Expr* LogicalAnd();
-    const Expr* InclusiveOr();
-    const Expr* ExclusiveOr();
-    const Expr* BitwiseAnd();
     const Expr* Equality();
     const Expr* Relational();
     const Expr* Term();

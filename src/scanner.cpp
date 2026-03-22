@@ -1,5 +1,5 @@
 #include "scanner.h"
-#include "error.h"
+#include "fex.h"
 #include <unordered_map>
 
 namespace fex {
@@ -58,14 +58,12 @@ void Scanner::ScanToken() {
             }
             break;
         case '%': AddToken(PERCENT); break;
-        case '^': AddToken(CARET); break;
-        case '~': AddToken(TILDE); break;
         case '!': AddToken(Match('=') ? EXCLAM_EQUAL : EXCLAM); break;
         case '=': AddToken(Match('=') ? EQUAL_EQUAL : EQUAL); break;
         case '<': AddToken(Match('=') ? LESS_EQUAL : LESS); break;
         case '>': AddToken(Match('=') ? GREATER_EQUAL : GREATER); break;
-        case '&': AddToken(Match('&') ? AMP_AMP : AMP); break;
-        case '|': AddToken(Match('|') ? PIPE_PIPE : PIPE); break;
+        case '&': AddToken(AMP_AMP); break;
+        case '|': AddToken(PIPE_PIPE); break;
 
         case '"': ScanString(); break;
 
@@ -82,7 +80,7 @@ void Scanner::ScanToken() {
             } else if (IsAlpha(c)) {
                 ScanIdentifier();
             } else {
-                FexError(m_line, "Unexpected character.");
+                FexInterpreter::Error(m_line, "Unexpected character.");
             }
             break;
     }
@@ -97,7 +95,7 @@ void Scanner::ScanString() {
     }
 
     if (IsAtEnd()) {
-        FexError(m_line, "Unterminated string.");
+        FexInterpreter::Error(m_line, "Unterminated string.");
         return;
     }
 

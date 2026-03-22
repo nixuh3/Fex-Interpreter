@@ -19,8 +19,6 @@ enum TokenType {
     SLASH,
     STAR,
     PERCENT,
-    CARET,
-    TILDE,
 
     // One or two character tokens
     EXCLAM,
@@ -31,9 +29,7 @@ enum TokenType {
     GREATER_EQUAL,
     LESS,
     LESS_EQUAL,
-    AMP,
     AMP_AMP,
-    PIPE,
     PIPE_PIPE,
 
     // Literals
@@ -61,9 +57,9 @@ using Value = std::variant<std::monostate, double, std::string>;
 
 std::string ValToStr(const Value& value);
 
-class Token {
-  public:
+struct Token {
     Token(TokenType type, std::string_view lexeme, const Value& literal, int line);
+
     std::string ToStr() const;
 
     const TokenType type;

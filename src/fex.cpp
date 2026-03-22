@@ -1,6 +1,7 @@
 #include "fex.h"
 #include "ast_printer.h"
 #include "parser.h"
+#include "runtime_error.h"
 #include "scanner.h"
 #include <fstream>
 #include <iostream>
@@ -25,7 +26,7 @@ void FexInterpreter::RunFile(const std::string& path) {
 
     Run(buffer);
 
-    if (s_hadError) {
+    if (s_hadError || s_hadRuntimeError) {
         std::exit(1);
     }
 }
@@ -42,6 +43,23 @@ void FexInterpreter::RunREPL() {
         Run(line);
         s_hadError = false;
     }
+}
+
+void FexInterpreter::Error(int line, std::string_view message) {
+    Report(line, "", message);
+}
+
+void FexInterpreter::Error(const Token& token, std::string_view message) {
+    if (token.type == END) {
+        Report(token.line, " at end", message);
+    } else {
+        Report(token.line, " at '" + token.lexeme + "'", message);
+    }
+}
+
+void FexInterpreter::RuntimeError_(const RuntimeError& error) {
+    std::cout << std::string(error.what()) + "\n[line " + std::to_string(error.token.line) + "]\n";
+    s_hadRuntimeError = true;
 }
 
 void FexInterpreter::Run(std::string_view source) {
@@ -61,6 +79,8 @@ void FexInterpreter::Run(std::string_view source) {
 
     AstPrinter printer;
     std::cout << printer.Print(expr) << "\n";
+
+    s_interpreter.Interpret(expr);
 }
 
 void FexInterpreter::Report(int line, std::string_view where, std::string_view msg) {

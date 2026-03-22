@@ -1,6 +1,6 @@
 #include "parser.h"
 #include "arena.h"
-#include "error.h"
+#include "fex.h"
 
 namespace fex {
 
@@ -32,45 +32,9 @@ const Expr* Parser::LogicalOr() {
 }
 
 const Expr* Parser::LogicalAnd() {
-    const Expr* expr = InclusiveOr();
-
-    while (Match(AMP_AMP)) {
-        Token op = Previous();
-        const Expr* right = InclusiveOr();
-        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
-    }
-
-    return expr;
-}
-
-const Expr* Parser::InclusiveOr() {
-    const Expr* expr = ExclusiveOr();
-
-    while (Match(PIPE)) {
-        Token op = Previous();
-        const Expr* right = ExclusiveOr();
-        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
-    }
-
-    return expr;
-}
-
-const Expr* Parser::ExclusiveOr() {
-    const Expr* expr = BitwiseAnd();
-
-    while (Match(CARET)) {
-        Token op = Previous();
-        const Expr* right = BitwiseAnd();
-        expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
-    }
-
-    return expr;
-}
-
-const Expr* Parser::BitwiseAnd() {
     const Expr* expr = Equality();
 
-    while (Match(AMP)) {
+    while (Match(AMP_AMP)) {
         Token op = Previous();
         const Expr* right = Equality();
         expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
@@ -128,7 +92,7 @@ const Expr* Parser::Factor() {
 }
 
 const Expr* Parser::Unary_() {
-    if (Match(EXCLAM, PLUS, MINUS, TILDE)) {
+    if (Match(EXCLAM, PLUS, MINUS)) {
         Token op = Previous();
         const Expr* right = Unary_();
         return m_arena.Alloc<Expr>(Unary{ op, right });
@@ -203,7 +167,7 @@ Token Parser::Consume(TokenType type, std::string_view message) {
 }
 
 Parser::ParseError Parser::Error(Token token, std::string_view message) {
-    FexError(token, message);
+    FexInterpreter::Error(token, message);
     return ParseError();
 }
 
