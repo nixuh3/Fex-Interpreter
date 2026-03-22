@@ -57,13 +57,16 @@ void Scanner::ScanToken() {
                 AddToken(SLASH);
             }
             break;
-        case '%': AddToken(PERCENT); break;
         case '!': AddToken(Match('=') ? EXCLAM_EQUAL : EXCLAM); break;
         case '=': AddToken(Match('=') ? EQUAL_EQUAL : EQUAL); break;
         case '<': AddToken(Match('=') ? LESS_EQUAL : LESS); break;
         case '>': AddToken(Match('=') ? GREATER_EQUAL : GREATER); break;
-        case '&': AddToken(AMP_AMP); break;
-        case '|': AddToken(PIPE_PIPE); break;
+        case '&':
+            Match('&') ? AddToken(AMP_AMP) : FexInterpreter::Error(m_line, "Expected '&'.");
+            break;
+        case '|':
+            Match('|') ? AddToken(PIPE_PIPE) : FexInterpreter::Error(m_line, "Expected '|'.");
+            break;
 
         case '"': ScanString(); break;
 

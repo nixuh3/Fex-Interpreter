@@ -1,7 +1,5 @@
 #include "token.h"
-#include <cmath>
-#include <iomanip>
-#include <sstream>
+#include "utils.h"
 #include <unordered_map>
 
 namespace fex {
@@ -21,7 +19,6 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
     {     SEMICOLON,         "semicolon" },
     {         SLASH,             "slash" },
     {          STAR,              "star" },
-    {       PERCENT,           "percent" },
 
     // One or two character tokens
     {        EXCLAM,       "exclamation" },
@@ -55,30 +52,6 @@ const std::unordered_map<TokenType, std::string> TypeToStr{
 
     {           END,               "EOF" }
 };
-
-std::string FormatDouble(double x, int precision = 6) {
-    if (std::isnan(x)) {
-        return "nan";
-    } else if (std::isinf(x)) {
-        return x > 0 ? "inf" : "-inf";
-    }
-
-    std::ostringstream oss;
-    oss << std::fixed << std::setprecision(precision) << x;
-
-    std::string s = oss.str();
-
-    auto pos = s.find_last_not_of('0');
-    if (pos != std::string::npos) {
-        s.erase(pos + 1);
-    }
-
-    if (!s.empty() && s.back() == '.') {
-        s.pop_back();
-    }
-
-    return s;
-}
 
 } // namespace
 

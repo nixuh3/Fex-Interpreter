@@ -58,7 +58,7 @@ void FexInterpreter::Error(const Token& token, std::string_view message) {
 }
 
 void FexInterpreter::RuntimeError_(const RuntimeError& error) {
-    std::cout << std::string(error.what()) + "\n[line " + std::to_string(error.token.line) + "]\n";
+    std::cout << std::string(error.what()) + " [line " + std::to_string(error.token.line) + "]\n";
     s_hadRuntimeError = true;
 }
 
@@ -66,9 +66,9 @@ void FexInterpreter::Run(std::string_view source) {
     Scanner scanner(source);
     const auto& tokens = scanner.ScanTokens();
 
-    // for (const auto& token : tokens) {
-    //     std::cout << token.ToStr() << "\n";
-    // }
+    for (const auto& token : tokens) {
+        std::cout << token.ToStr() << "\n";
+    }
 
     Parser parser(tokens, s_arena);
     auto expr = parser.Parse();
@@ -78,7 +78,7 @@ void FexInterpreter::Run(std::string_view source) {
     }
 
     AstPrinter printer;
-    std::cout << printer.Print(expr) << "\n";
+    std::cout << "AST: " << printer.Print(expr) << "\n";
 
     s_interpreter.Interpret(expr);
 }

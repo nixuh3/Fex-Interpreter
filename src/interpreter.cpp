@@ -2,6 +2,7 @@
 #include "expr.h"
 #include "fex.h"
 #include "runtime_error.h"
+#include "utils.h"
 #include <iostream>
 
 namespace fex {
@@ -58,10 +59,10 @@ Value Interpreter::Visit(const Binary& expr) {
                         return l + r;
                     } else if constexpr (std::is_same_v<L, double> &&
                                          std::is_same_v<R, std::string>) {
-                        return std::to_string(l) + r;
+                        return FormatDouble(l) + r;
                     } else if constexpr (std::is_same_v<L, std::string> &&
                                          std::is_same_v<R, double>) {
-                        return l + std::to_string(r);
+                        return l + FormatDouble(r);
                     } else {
                         throw RuntimeError{ expr.op,
                                             "Operands must be two numbers or two strings." };
@@ -70,6 +71,8 @@ Value Interpreter::Visit(const Binary& expr) {
                 left, right);
         case EXCLAM_EQUAL: return double(!IsEqual(left, right));
         case EQUAL_EQUAL: return double(IsEqual(left, right));
+        case AMP_AMP: return double(IsTruthy(left) && IsTruthy(right));
+        case PIPE_PIPE: return double(IsTruthy(left) || IsTruthy(right));
     }
 
     // Unreachable.

@@ -9,8 +9,14 @@ Parser::Parser(const std::vector<Token>& tokens, Arena& arena)
 
 const Expr* Parser::Parse() {
     try {
-        return Expression();
-    } catch (ParseError error) {
+        const Expr* expr = Expression();
+
+        if (!IsAtEnd()) {
+            throw Error(Peek(), "Unexpected token after expression.");
+        }
+
+        return expr;
+    } catch (ParseError&) {
         return nullptr;
     }
 }
@@ -82,7 +88,7 @@ const Expr* Parser::Term() {
 const Expr* Parser::Factor() {
     const Expr* expr = Unary_();
 
-    while (Match(STAR, SLASH, PERCENT)) {
+    while (Match(STAR, SLASH)) {
         Token op = Previous();
         const Expr* right = Unary_();
         expr = m_arena.Alloc<Expr>(Binary{ expr, op, right });
