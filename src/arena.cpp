@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "arena.h"
 
 namespace fex {
@@ -7,8 +8,6 @@ Arena::Arena(size_t chunkSize) : m_size(chunkSize) {
     m_offset = m_buffer;
 }
 
-Arena::~Arena() {
-    delete[] m_buffer;
-}
+Arena::~Arena() { delete[] m_buffer; }
 
 } // namespace fex

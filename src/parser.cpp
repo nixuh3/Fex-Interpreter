@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "parser.h"
 #include "arena.h"
 #include "fex.h"
@@ -21,9 +22,7 @@ const Expr* Parser::Parse() {
     }
 }
 
-const Expr* Parser::Expression() {
-    return LogicalOr();
-}
+const Expr* Parser::Expression() { return LogicalOr(); }
 
 const Expr* Parser::LogicalOr() {
     const Expr* expr = LogicalAnd();
@@ -153,17 +152,11 @@ Token Parser::Advance() {
     return Previous();
 }
 
-bool Parser::IsAtEnd() {
-    return Peek().type == END;
-}
+bool Parser::IsAtEnd() { return Peek().type == END; }
 
-Token Parser::Peek() {
-    return m_tokens[m_current];
-}
+Token Parser::Peek() { return m_tokens[m_current]; }
 
-Token Parser::Previous() {
-    return m_tokens[m_current - 1];
-}
+Token Parser::Previous() { return m_tokens[m_current - 1]; }
 
 Token Parser::Consume(TokenType type, std::string_view message) {
     if (Check(type)) {

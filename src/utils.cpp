@@ -1,7 +1,5 @@
+#include "pch.h"
 #include "utils.h"
-#include <cmath>
-#include <iomanip>
-#include <sstream>
 
 namespace fex {
 
@@ -13,7 +11,7 @@ std::string FormatDouble(double x, int precision) {
     }
 
     std::ostringstream oss;
-    oss << std::setprecision(precision) << x;
+    oss << std::fixed << std::setprecision(precision) << x;
 
     std::string s = oss.str();
 

@@ -1,6 +1,6 @@
+#include "pch.h"
 #include "scanner.h"
 #include "fex.h"
-#include <unordered_map>
 
 namespace fex {
 
@@ -144,18 +144,14 @@ void Scanner::ScanIdentifier() {
     }
 }
 
-void Scanner::AddToken(TokenType type) {
-    AddToken(type, {});
-}
+void Scanner::AddToken(TokenType type) { AddToken(type, {}); }
 
 void Scanner::AddToken(TokenType type, Value literal) {
     std::string_view text(&m_source[m_start], m_current - m_start);
     m_tokens.emplace_back(type, text, literal, m_line);
 }
 
-bool Scanner::IsAtEnd(int offset) const {
-    return m_current + offset >= m_source.length();
-}
+bool Scanner::IsAtEnd(int offset) const { return m_current + offset >= m_source.length(); }
 char Scanner::Peek(int offset) const {
     if (IsAtEnd(offset)) {
         return '\0';
@@ -163,9 +159,7 @@ char Scanner::Peek(int offset) const {
     return m_source[m_current + offset];
 }
 
-char Scanner::Advance() {
-    return m_source[m_current++];
-}
+char Scanner::Advance() { return m_source[m_current++]; }
 
 bool Scanner::Match(char expected) {
     if (IsAtEnd() || m_source[m_current] != expected) {
@@ -176,16 +170,12 @@ bool Scanner::Match(char expected) {
     return true;
 }
 
-bool Scanner::IsDigit(char c) {
-    return c >= '0' && c <= '9';
-}
+bool Scanner::IsDigit(char c) { return c >= '0' && c <= '9'; }
 
 bool Scanner::IsAlpha(char c) {
     return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 }
 
-bool Scanner::IsAlphaNumeric(char c) {
-    return IsAlpha(c) || IsDigit(c);
-}
+bool Scanner::IsAlphaNumeric(char c) { return IsAlpha(c) || IsDigit(c); }
 
 } // namespace fex

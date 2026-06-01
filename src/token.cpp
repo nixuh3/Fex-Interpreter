@@ -1,6 +1,6 @@
+#include "pch.h"
 #include "token.h"
 #include "utils.h"
-#include <unordered_map>
 
 namespace fex {
 
@@ -8,56 +8,56 @@ namespace {
 
 const std::unordered_map<TokenType, std::string> TypeToStr{
     // Single-character tokens
-    {    LEFT_PAREN,  "left parenthesis" },
-    {   RIGHT_PAREN, "right parenthesis" },
-    {    LEFT_BRACE,        "left brace" },
-    {   RIGHT_BRACE,       "right brace" },
-    {         COMMA,             "comma" },
-    {           DOT,               "dot" },
-    {         MINUS,             "minus" },
-    {          PLUS,              "plus" },
-    {     SEMICOLON,         "semicolon" },
-    {         SLASH,             "slash" },
-    {          STAR,              "star" },
+    {    LEFT_PAREN,    "left_paren" },
+    {   RIGHT_PAREN,   "right_paren" },
+    {    LEFT_BRACE,    "left_brace" },
+    {   RIGHT_BRACE,   "right_brace" },
+    {         COMMA,         "comma" },
+    {           DOT,           "dot" },
+    {         MINUS,         "minus" },
+    {          PLUS,          "plus" },
+    {     SEMICOLON,     "semicolon" },
+    {         SLASH,         "slash" },
+    {          STAR,          "star" },
 
     // One or two character tokens
-    {        EXCLAM,       "exclamation" },
-    {  EXCLAM_EQUAL, "exclamation equal" },
-    {         EQUAL,             "equal" },
-    {   EQUAL_EQUAL,       "equal equal" },
-    {       GREATER,           "greater" },
-    { GREATER_EQUAL,     "greater equal" },
-    {          LESS,              "less" },
-    {    LESS_EQUAL,        "less equal" },
-    {       AMP_AMP,       "logical and" },
-    {     PIPE_PIPE,        "logical or" },
+    {        EXCLAM,        "exclam" },
+    {  EXCLAM_EQUAL,  "exclam_equal" },
+    {         EQUAL,         "equal" },
+    {   EQUAL_EQUAL,   "equal equal" },
+    {       GREATER,       "greater" },
+    { GREATER_EQUAL, "greater_equal" },
+    {          LESS,          "less" },
+    {    LESS_EQUAL,    "less_equal" },
+    {       AMP_AMP,   "logical_and" },
+    {     PIPE_PIPE,    "logical_or" },
 
     // Literals
-    {    IDENTIFIER,        "identifier" },
-    {        STRING,            "string" },
-    {        NUMBER,            "number" },
+    {    IDENTIFIER,    "identifier" },
+    {        STRING,        "string" },
+    {        NUMBER,        "number" },
 
     // Keywords
-    {         CLASS,             "class" },
-    {          ELSE,              "else" },
-    {         FALSE,             "false" },
-    {           FOR,               "for" },
-    {            IF,                "if" },
-    {           NUL,              "null" },
-    {         PRINT,             "print" },
-    {        RETURN,            "return" },
-    {          TRUE,              "true" },
-    {           VAR,               "var" },
-    {         WHILE,             "while" },
+    {         CLASS,       "keyword" },
+    {          ELSE,       "keyword" },
+    {         FALSE,       "keyword" },
+    {           FOR,       "keyword" },
+    {            IF,       "keyword" },
+    {           NUL,       "keyword" },
+    {         PRINT,       "keyword" },
+    {        RETURN,       "keyword" },
+    {          TRUE,       "keyword" },
+    {           VAR,       "keyword" },
+    {         WHILE,       "keyword" },
 
-    {           END,               "EOF" }
+    {           END,           "end" }
 };
 
 } // namespace
 
 std::string ValToStr(const Value& value) {
     return std::visit(
-        [](auto&& val) -> std::string {
+        [](const auto& val) -> std::string {
             using T = std::decay_t<decltype(val)>;
             if constexpr (std::is_same_v<T, std::string>) {
                 return val;

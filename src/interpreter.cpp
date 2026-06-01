@@ -1,9 +1,9 @@
+#include "pch.h"
 #include "interpreter.h"
 #include "expr.h"
 #include "fex.h"
 #include "runtime_error.h"
 #include "utils.h"
-#include <iostream>
 
 namespace fex {
 
@@ -16,9 +16,7 @@ void Interpreter::Interpret(const Expr* expr) {
     }
 }
 
-Value Interpreter::Visit(const Assign& expr) {
-    return {};
-}
+Value Interpreter::Visit(const Assign& expr) { return {}; }
 
 Value Interpreter::Visit(const Binary& expr) {
     Value left = Evaluate(expr.left);
@@ -55,24 +53,32 @@ Value Interpreter::Visit(const Binary& expr) {
                     if constexpr (std::is_same_v<L, double> && std::is_same_v<R, double>) {
                         return l + r;
                     } else if constexpr (std::is_same_v<L, std::string> &&
-                                         std::is_same_v<R, std::string>) {
+                        std::is_same_v<R, std::string>) {
                         return l + r;
                     } else if constexpr (std::is_same_v<L, double> &&
-                                         std::is_same_v<R, std::string>) {
+                        std::is_same_v<R, std::string>) {
                         return FormatDouble(l) + r;
                     } else if constexpr (std::is_same_v<L, std::string> &&
-                                         std::is_same_v<R, double>) {
+                        std::is_same_v<R, double>) {
                         return l + FormatDouble(r);
                     } else {
                         throw RuntimeError{ expr.op,
-                                            "Operands must be two numbers or two strings." };
+                            "Operands must be two numbers or two strings." };
                     }
                 },
                 left, right);
         case EXCLAM_EQUAL: return double(!IsEqual(left, right));
         case EQUAL_EQUAL: return double(IsEqual(left, right));
-        case AMP_AMP: return double(IsTruthy(left) && IsTruthy(right));
-        case PIPE_PIPE: return double(IsTruthy(left) || IsTruthy(right));
+        case AMP_AMP:
+            if (!IsTruthy(left)) {
+                return 0.0;
+            }
+            return double(IsTruthy(Evaluate(expr.right)));
+        case PIPE_PIPE:
+            if (IsTruthy(left)) {
+                return 1.0;
+            }
+            return double(IsTruthy(Evaluate(expr.right)));
     }
 
     // Unreachable.
@@ -83,7 +89,7 @@ Value Interpreter::Visit(const Unary& expr) {
     Value right = Evaluate(expr.right);
 
     switch (expr.op.type) {
-        case EXCLAM: !IsTruthy(right);
+        case EXCLAM: return double(!IsTruthy(right));
         case MINUS: CheckNumberOperand(expr.op, right); return -std::get<double>(right);
         case PLUS: CheckNumberOperand(expr.op, right); return right;
     }
@@ -92,17 +98,11 @@ Value Interpreter::Visit(const Unary& expr) {
     return {};
 }
 
-Value Interpreter::Visit(const Grouping& expr) {
-    return Evaluate(expr.expression);
-}
+Value Interpreter::Visit(const Grouping& expr) { return Evaluate(expr.expression); }
 
-Value Interpreter::Visit(const Literal& expr) {
-    return expr.value;
-}
+Value Interpreter::Visit(const Literal& expr) { return expr.value; }
 
-Value Interpreter::Visit(const Variable& expr) {
-    return {};
-}
+Value Interpreter::Visit(const Variable& expr) { return {}; }
 
 Value Interpreter::Evaluate(const Expr* expr) {
     return std::visit([this](auto&& node) { return Visit(node); }, *expr);
@@ -146,7 +146,7 @@ bool Interpreter::IsEqual(const Value& a, const Value& b) {
             if constexpr (std::is_same_v<L, std::monostate> && std::is_same_v<R, std::monostate>) {
                 return true; // both are monostate
             } else if constexpr (std::is_same_v<L, std::monostate> ||
-                                 std::is_same_v<R, std::monostate>) {
+                std::is_same_v<R, std::monostate>) {
                 return false; // one is monostate, the other is not
             } else if constexpr (std::is_same_v<L, R>) {
                 return l == r; // same type, compare normally

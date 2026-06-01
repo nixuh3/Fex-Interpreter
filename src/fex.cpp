@@ -1,10 +1,9 @@
+#include "pch.h"
 #include "fex.h"
 #include "ast_printer.h"
 #include "parser.h"
 #include "runtime_error.h"
 #include "scanner.h"
-#include <fstream>
-#include <iostream>
 
 namespace fex {
 
@@ -39,15 +38,16 @@ void FexInterpreter::RunREPL() {
         if (!std::getline(std::cin, line)) {
             break;
         }
+        if (line.empty()) {
+            continue;
+        }
 
         Run(line);
         s_hadError = false;
     }
 }
 
-void FexInterpreter::Error(int line, std::string_view message) {
-    Report(line, "", message);
-}
+void FexInterpreter::Error(int line, std::string_view message) { Report(line, "", message); }
 
 void FexInterpreter::Error(const Token& token, std::string_view message) {
     if (token.type == END) {
@@ -66,6 +66,7 @@ void FexInterpreter::Run(std::string_view source) {
     Scanner scanner(source);
     const auto& tokens = scanner.ScanTokens();
 
+    std::cout << "Tokens: \n";
     for (const auto& token : tokens) {
         std::cout << token.ToStr() << "\n";
     }

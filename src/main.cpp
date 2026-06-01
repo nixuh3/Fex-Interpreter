@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "fex.h"
-#include <iostream>
 
 int main(int argc, char const** argv) {
     if (argc > 2) {
