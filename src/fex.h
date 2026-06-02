@@ -28,8 +28,6 @@ class FexInterpreter {
     inline static bool s_hadError = false;
     inline static bool s_hadRuntimeError = false;
     inline static Arena s_arena{ 4 * 1024 * 1024 };
-
-    inline static Interpreter s_interpreter;
 };
 
 } // namespace fex

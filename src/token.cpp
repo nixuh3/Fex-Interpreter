@@ -63,6 +63,8 @@ std::string ValToStr(const Value& value) {
                 return val;
             } else if constexpr (std::is_same_v<T, double>) {
                 return FormatDouble(val);
+            } else if constexpr (std::is_same_v<T, bool>) {
+                return val ? "true" : "false";
             } else {
                 return "";
             }

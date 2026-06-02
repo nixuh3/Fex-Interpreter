@@ -6,7 +6,7 @@ This interpreter is still under development. Features may change and bugs may be
 
 ---
 
-An interpreter written in C++ for my custom programming language, **Fex**.
+An interpreter written in C++ for a custom programming language, **Fex**.
 
 The interpreter supports:
 

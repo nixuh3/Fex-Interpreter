@@ -108,10 +108,10 @@ const Expr* Parser::Unary_() {
 
 const Expr* Parser::Primary_() {
     if (Match(FALSE)) {
-        return m_arena.Alloc<Expr>(Literal{ 0.0 });
+        return m_arena.Alloc<Expr>(Literal{ false });
     }
     if (Match(TRUE)) {
-        return m_arena.Alloc<Expr>(Literal{ 1.0 });
+        return m_arena.Alloc<Expr>(Literal{ true });
     }
     if (Match(NUL)) {
         return m_arena.Alloc<Expr>(Literal{ std::monostate{} });

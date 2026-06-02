@@ -52,7 +52,7 @@ enum TokenType {
     END
 };
 
-using Value = std::variant<std::monostate, double, std::string>;
+using Value = std::variant<std::monostate, double, bool, std::string>;
 
 std::string ValToStr(const Value& value);
 

@@ -11,7 +11,7 @@ void FexInterpreter::RunFile(const std::string& path) {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file) {
         std::cout << "Failed to open file: " << path << "\n";
-        return;
+        std::exit(1);
     }
 
     std::streamsize size = file.tellg();
@@ -67,8 +67,8 @@ void FexInterpreter::Run(std::string_view source) {
     const auto& tokens = scanner.ScanTokens();
 
     std::cout << "Tokens: \n";
-    for (const auto& token : tokens) {
-        std::cout << token.ToStr() << "\n";
+    for (size_t i = 0; const auto& token : tokens) {
+        std::cout << ++i << ": " << token.ToStr() << "\n";
     }
 
     Parser parser(tokens, s_arena);
@@ -81,7 +81,7 @@ void FexInterpreter::Run(std::string_view source) {
     AstPrinter printer;
     std::cout << "AST: " << printer.Print(expr) << "\n";
 
-    s_interpreter.Interpret(expr);
+    Interpreter::Interpret(expr);
 }
 
 void FexInterpreter::Report(int line, std::string_view where, std::string_view msg) {
